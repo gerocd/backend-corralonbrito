@@ -1,20 +1,81 @@
-create database apitest;
-use apitest;
+create database corralonbrito;
 
-create table animes(
-idAnime int primary key auto_increment,
-anime varchar(200),
-genero varchar(100),
-info varchar(350),
-calificacion int
+use corralonbrito;
+
+CREATE TABLE Envio (
+	idEnvio INT AUTO_INCREMENT PRIMARY KEY,
+	Cantidad FLOAT,
+	Fecha_Envio DATETIME,
+	Direccion_Envio VARCHAR(500),
+	Detalle_Factura INT UNIQUE,
+	FOREIGN KEY (Detalle_Factura) REFERENCES DetalleFactura(Detalle_Factura)
 );
 
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (1,'Vinland Saga','Acción, Drama, Histórico','La serie sigue la historia de Thorfinn, un joven vikingo que busca venganza contra Askeladd, el hombre que mató a su padre. La serie se desarrolla en la Inglaterra del siglo XI y se centra en la lucha por el trono inglés.',10);
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (2,'Berserk 1998',' Acción, Aventura, Drama, Fantasía, Horror','La serie sigue la historia de Guts, un guerrero solitario que busca venganza contra su antiguo amigo Griffith. La serie se desarrolla en un mundo de fantasía oscuro y violento.',9);
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (3,'Cowboy Bebop','Acción, Opera Espacial, Ciencia ficción','La serie sigue las aventuras de un grupo de cazarrecompensas que viajan por el espacio en busca de criminales peligrosos. La serie es conocida por su estilo de animación único y su banda sonora de jazz.',9);
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (4,'Attack on Titan','Acción, Drama, Fantasía oscura','La serie se desarrolla en un mundo donde la humanidad vive rodeada por muros para protegerse de los titanes, gigantes humanoides que devoran a los humanos sin razón aparente. La serie sigue la historia de Eren Yeager y sus amigos mientras luchan contra los titanes y descubren los secretos detrás de su existencia.',10);
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (5,'Death Note','Misterio, Psicológico, Sobrenatural','La serie sigue la historia de Light Yagami, un estudiante sobresaliente que encuentra un cuaderno sobrenatural que le permite matar a cualquier persona cuyo nombre escriba en él. Light decide usar el cuaderno para crear un mundo libre de criminales, pero pronto se encuentra en una batalla intelectual con L, el detective encargado de atraparlo',8);
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (6,'Demon Slayer','Aventura, Drama, Fantasía oscura','La serie sigue la historia de Tanjiro Kamado, un joven que se convierte en cazador de demonios después de que su familia es asesinada por uno. Tanjiro busca venganza contra el demonio que mató a su familia mientras intenta salvar a su hermana menor, quien se convirtió en un demonio después del ataque',8);
-insert into animes (`idAnime`,`anime`,`genero`,`info`,`calificacion`) values (7,'Full Metal Alchemist','Aventura, Comedia dramática','La serie sigue la historia de dos hermanos alquimistas, Edward y Alphonse Elric, mientras buscan una manera de recuperar sus cuerpos después de una fallida transmutación humana. La serie se desarrolla en un mundo donde la alquimia es una ciencia avanzada y peligrosa',9);
+CREATE TABLE Compra (
+	idCompra INT AUTO_INCREMENT PRIMARY KEY,
+	idProducto INT,
+	Cantidad FLOAT,
+	Fecha_Compra DATETIME,
+	FOREIGN KEY (idProducto) REFERENCES Productos(Codigo_Producto)
+);
 
+CREATE TABLE Productos (
+	Codigo_Producto INT AUTO_INCREMENT PRIMARY KEY,
+	Nombre VARCHAR(200),
+	Descripcion VARCHAR(300),
+	Marca VARCHAR(150),
+	Precio_Unitario FLOAT,
+	Precio_Costo FLOAT
+);
 
+CREATE TABLE Ventas (
+	idVenta INT AUTO_INCREMENT PRIMARY KEY,
+	Codigo_Producto INT,
+	Cantidad_Venta FLOAT,
+	FOREIGN KEY (Codigo_Producto) REFERENCES Productos(Codigo_Producto)
+);
+
+CREATE TABLE DetalleFactura (
+	Detalle_Factura INT AUTO_INCREMENT PRIMARY KEY,
+	idVenta INT,
+	Cantidad_Venta_Producto FLOAT,
+	Precio_Venta_Total FLOAT,
+	Fecha_Venta DATETIME,
+	FOREIGN KEY (idVenta) REFERENCES Ventas(idVenta)
+);
+
+CREATE TABLE Categoria (
+	idCategoria INT AUTO_INCREMENT PRIMARY KEY,
+	Nombre VARCHAR(255),
+	Descripcion VARCHAR(255)
+);
+
+CREATE TABLE Producto_Categoria (
+	idProducto_Categoria INT AUTO_INCREMENT PRIMARY KEY,
+	Codigo_Producto INT,
+	idCategoria INT,
+	FOREIGN KEY (Codigo_Producto) REFERENCES Productos(Codigo_Producto),
+	FOREIGN KEY (idCategoria) REFERENCES Categoria(idCategoria)
+);
+
+CREATE TABLE Proveedores (
+	idProveedor INT AUTO_INCREMENT PRIMARY KEY,
+	Nombre VARCHAR(250)
+);
+
+CREATE TABLE Producto_Proveedor (
+	idProducto_Proveedor INT AUTO_INCREMENT PRIMARY KEY,
+	Codigo_Producto INT,
+	idProveedor INT,
+	FOREIGN KEY (Codigo_Producto) REFERENCES Productos(Codigo_Producto),
+	FOREIGN KEY (idProveedor) REFERENCES Proveedores(idProveedor)
+);
+
+CREATE TABLE Transacciones (
+  idTransaccion INT AUTO_INCREMENT PRIMARY KEY,
+  Tipo ENUM('Compra', 'Venta') NOT NULL,
+  Producto INT NOT NULL,
+  Cantidad FLOAT NOT NULL,
+  Precio_Unitario FLOAT NOT NULL,
+  Fecha_Transaccion DATETIME NOT NULL
+);
